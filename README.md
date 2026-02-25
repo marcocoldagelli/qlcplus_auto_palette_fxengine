@@ -73,8 +73,8 @@ The original `.qxw` file is never modified: the script always produces a new `_p
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/qlcplus-auto-palette.git
-cd qlcplus-auto-palette
+git clone https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine.git
+cd qlcplus_auto_palette_fxengine
 python3 qlcplus_auto_palette_fxengine.py --help
 ```
 
