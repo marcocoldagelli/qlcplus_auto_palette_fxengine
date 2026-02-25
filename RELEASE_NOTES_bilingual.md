@@ -2,7 +2,7 @@
 
 ---
 
-## v1.1.0-alpha.4
+## v1.1.0-alpha
 
 > ⚠️ **IT:** Versione alpha — funzionante e testata, ma l'API interna (nomi costanti, struttura funzioni) potrebbe cambiare in versioni future.
 > ⚠️ **EN:** Alpha release — working and tested, but the internal API (constant names, function structure) may change in future versions.
