@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QLC+ Auto Palette FX Engine — Marco Coldagelli</title>
+<meta name="description" content="Stop building QLC+ scenes by hand. One command generates your entire palette — colors, positions, EFX and chasers — for every fixture in your show.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #080b12;
+  --bg2:      #0d1220;
+  --bg3:      #111827;
+  --amber:    #ffb347;
+  --cyan:     #00e5ff;
+  --violet:   #a855f7;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --blue:     #3b82f6;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --border:   rgba(255,255,255,0.07);
+  --card:     rgba(255,255,255,0.04);
+  --mono:     'Space Mono', monospace;
+  --sans:     'Syne', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--sans); font-size: 16px; line-height: 1.6; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.5;
+}
+
+/* ── BEAMS ───────────────────────────────────────────────────────────────── */
+.beams { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+.beam { position:absolute; top:-20%; width:2px; height:120%; transform-origin:top center; opacity:0; animation:sweep 8s ease-in-out infinite; }
+.beam::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,var(--c,#fff),transparent 70%); filter:blur(8px); }
+.beam:nth-child(1){left:15%;--c:var(--amber);animation-delay:0s;animation-duration:9s;}
+.beam:nth-child(2){left:35%;--c:var(--cyan);animation-delay:2s;animation-duration:11s;}
+.beam:nth-child(3){left:55%;--c:var(--violet);animation-delay:4s;animation-duration:8s;}
+.beam:nth-child(4){left:75%;--c:var(--amber);animation-delay:6s;animation-duration:13s;}
+.beam:nth-child(5){left:88%;--c:var(--cyan);animation-delay:1s;animation-duration:10s;}
+@keyframes sweep {
+  0%  { opacity:0; transform:rotate(var(--r1,-15deg)); }
+  20% { opacity:0.5; }
+  50% { opacity:0.25; transform:rotate(var(--r2,15deg)); }
+  80% { opacity:0.5; }
+  100%{ opacity:0; transform:rotate(var(--r1,-15deg)); }
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────────────────────── */
+section { position:relative; z-index:1; }
+.container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+/* ── NAV ─────────────────────────────────────────────────────────────────── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:14px 24px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:rgba(8,11,18,0.88); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--amber); letter-spacing:.04em; text-decoration:none; }
+.nav-logo span { color:var(--muted); }
+.nav-links { display:flex; gap:24px; list-style:none; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:14px; transition:color .2s; }
+.nav-links a:hover { color:var(--text); }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.nav-badge {
+  background:rgba(255,179,71,.15); border:1px solid rgba(255,179,71,.3);
+  color:var(--amber); font-family:var(--mono); font-size:11px;
+  padding:2px 10px; border-radius:100px; white-space:nowrap;
+}
+
+/* ── LANGUAGE SWITCHER ────────────────────────────────────────────────────── */
+.lang-switch {
+  display:flex; align-items:center;
+  border:1px solid var(--border); border-radius:8px; overflow:hidden;
+}
+.lang-btn {
+  padding:6px 13px; cursor:pointer; border:none; background:transparent;
+  color:var(--muted); transition:all .2s; letter-spacing:.05em;
+  font-family:var(--mono); font-size:12px; font-weight:700;
+}
+.lang-btn.active { background:var(--amber); color:#0a0a0f; }
+.lang-btn:not(.active):hover { background:rgba(255,255,255,.06); color:var(--text); }
+.lang-sep { width:1px; background:var(--border); align-self:stretch; }
+
+/* ── LINGUA — visibilità ────────────────────────────────────────────────── */
+.en { display:none; }
+.it { display:inline; }
+body.en .it { display:none; }
+body.en .en { display:inline; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+#hero {
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:120px 24px 80px; text-align:center;
+}
+.hero-tag {
+  display:inline-block; margin-bottom:28px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cyan); padding:6px 16px; border:1px solid rgba(0,229,255,.25);
+  border-radius:4px; background:rgba(0,229,255,.05);
+  animation:fadeUp .8s ease both;
+}
+h1 { font-size:clamp(48px,8vw,96px); font-weight:800; line-height:1.0; letter-spacing:-.03em; animation:fadeUp .8s .1s ease both; }
+h1 .qlc { color:var(--amber); }
+h1 .auto { background:linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero-sub { margin:28px auto 48px; max-width:640px; font-size:20px; color:var(--muted); line-height:1.55; animation:fadeUp .8s .2s ease both; }
+.hero-sub em { color:var(--text); font-style:normal; }
+.hero-cmd {
+  display:inline-block; margin-bottom:48px;
+  font-family:var(--mono); font-size:15px;
+  background:var(--bg3); border:1px solid var(--border);
+  color:var(--cyan); padding:16px 32px; border-radius:8px;
+  position:relative; cursor:pointer; animation:fadeUp .8s .3s ease both; transition:border-color .2s;
+}
+.hero-cmd::before { content:'$'; margin-right:10px; color:var(--muted); }
+.hero-cmd:hover { border-color:rgba(0,229,255,.4); }
+.copy-hint { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--muted); opacity:0; transition:opacity .2s; }
+.hero-cmd:hover .copy-hint { opacity:1; }
+.hero-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; animation:fadeUp .8s .4s ease both; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; border-radius:8px; font-weight:700; font-size:15px; text-decoration:none; transition:all .2s; cursor:pointer; border:none; font-family:var(--sans); }
+.btn-primary { background:var(--amber); color:#0a0a0f; }
+.btn-primary:hover { background:#ffc05e; transform:translateY(-2px); box-shadow:0 8px 32px rgba(255,179,71,.3); }
+.btn-secondary { background:transparent; color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--card); border-color:rgba(255,255,255,.15); transform:translateY(-2px); }
+.btn-ghost { background:transparent; color:var(--cyan); border:1px solid rgba(0,229,255,.25); }
+.btn-ghost:hover { background:rgba(0,229,255,.08); transform:translateY(-2px); }
+
+/* ── STATS ────────────────────────────────────────────────────────────────── */
+#stats { padding:60px 24px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg2); }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:32px; text-align:center; }
+.stat-n { font-family:var(--mono); font-size:clamp(36px,5vw,56px); font-weight:700; line-height:1; margin-bottom:8px; }
+.stat-n.amber{color:var(--amber);} .stat-n.cyan{color:var(--cyan);} .stat-n.violet{color:var(--violet);} .stat-n.green{color:var(--green);}
+.stat-label { font-size:14px; color:var(--muted); line-height:1.5; }
+
+/* ── FEATURES ─────────────────────────────────────────────────────────────── */
+#features { padding:100px 24px; }
+.section-label { font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.section-title { font-size:clamp(32px,4vw,48px); font-weight:800; letter-spacing:-.02em; margin-bottom:64px; }
+.section-title .accent { color:var(--amber); }
+.features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; }
+.feat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; transition:all .3s; position:relative; overflow:hidden; }
+.feat-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 0%,var(--glow,rgba(255,179,71,.1)),transparent 60%); opacity:0; transition:opacity .3s; }
+.feat-card:hover { border-color:rgba(255,179,71,.25); transform:translateY(-4px); }
+.feat-card:hover::before { opacity:1; }
+.feat-icon { font-size:36px; margin-bottom:20px; display:block; }
+.feat-card h3 { font-size:20px; font-weight:700; margin-bottom:10px; }
+.feat-card p { font-size:15px; color:var(--muted); line-height:1.65; }
+.feat-nums { display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
+.feat-pill { font-family:var(--mono); font-size:12px; padding:4px 10px; border-radius:100px; background:rgba(255,179,71,.1); color:var(--amber); border:1px solid rgba(255,179,71,.2); }
+.feat-pill.cyan { background:rgba(0,229,255,.1); color:var(--cyan); border-color:rgba(0,229,255,.2); }
+.feat-pill.violet { background:rgba(168,85,247,.1); color:var(--violet); border-color:rgba(168,85,247,.2); }
+.feat-pill.green { background:rgba(34,197,94,.1); color:var(--green); border-color:rgba(34,197,94,.2); }
+
+/* ── NEW IN v1.1 ──────────────────────────────────────────────────────────── */
+#new { padding:80px 24px; background:var(--bg2); }
+.new-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:48px; }
+.new-card { border:1px solid var(--border); border-radius:12px; padding:24px; background:var(--card); display:flex; gap:16px; align-items:flex-start; transition:border-color .2s; }
+.new-card:hover { border-color:rgba(0,229,255,.3); }
+.new-dot { width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; margin-top:2px; }
+.new-dot.a{background:rgba(255,179,71,.15);} .new-dot.c{background:rgba(0,229,255,.12);} .new-dot.v{background:rgba(168,85,247,.12);}
+.new-card h4 { font-size:15px; font-weight:700; margin-bottom:4px; }
+.new-card p { font-size:13px; color:var(--muted); line-height:1.5; }
+.badge-new { display:inline-block; font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:100px; letter-spacing:.1em; background:rgba(0,229,255,.15); color:var(--cyan); border:1px solid rgba(0,229,255,.25); vertical-align:middle; margin-left:8px; text-transform:uppercase; }
+
+/* ── USAGE ────────────────────────────────────────────────────────────────── */
+#usage { padding:100px 24px; }
+.usage-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+@media(max-width:700px){.usage-inner{grid-template-columns:1fr;}}
+.code-block { background:var(--bg3); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.code-header { padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+.dot{width:12px;height:12px;border-radius:50%;} .dot.r{background:#ef4444;} .dot.y{background:#eab308;} .dot.g{background:#22c55e;}
+.code-title { margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--muted); }
+.code-body { padding:24px; font-family:var(--mono); font-size:13px; line-height:2.1; overflow-x:auto; }
+.c-comment{color:var(--muted);} .c-cmd{color:var(--amber);} .c-str{color:var(--green);} .c-flag{color:var(--violet);}
+.opts-list { margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+.opt-row { display:flex; gap:12px; padding:10px 14px; background:var(--card); border:1px solid var(--border); border-radius:8px; }
+.opt-key { font-family:var(--mono); font-size:13px; color:var(--amber); white-space:nowrap; }
+.opt-desc { font-size:13px; color:var(--muted); }
+
+/* ── STRUCTURE ────────────────────────────────────────────────────────────── */
+#structure { padding:80px 24px; background:var(--bg2); }
+.tree-box { background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:32px; font-family:var(--mono); font-size:13px; line-height:2.1; overflow-x:auto; margin-top:40px; }
+.t-dir{color:var(--amber);} .t-new{color:var(--cyan);} .t-muted{color:var(--muted);}
+
+/* ── DOWNLOAD ─────────────────────────────────────────────────────────────── */
+#download {
+  padding:100px 24px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,179,71,.08),transparent 60%),
+             radial-gradient(ellipse at 80% 100%,rgba(0,229,255,.06),transparent 50%);
+}
+.dl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin:56px 0; }
+.dl-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; transition:all .25s; text-decoration:none; color:inherit; display:block; }
+.dl-card:hover { border-color:rgba(255,179,71,.35); transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,0,0,.3); }
+.dl-icon { font-size:40px; margin-bottom:16px; display:block; }
+.dl-card h3 { font-size:18px; font-weight:700; margin-bottom:6px; }
+.dl-card p { font-size:14px; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+.dl-tag { font-family:var(--mono); font-size:12px; color:var(--amber); display:inline-flex; align-items:center; gap:6px; }
+.dl-tag::before { content:'↓'; font-size:14px; }
+.dl-main { text-align:center; margin-top:40px; }
+.version-info { margin-top:24px; font-family:var(--mono); font-size:13px; color:var(--muted); display:flex; gap:24px; justify-content:center; flex-wrap:wrap; }
+.version-info span { display:flex; align-items:center; gap:6px; }
+.dot-sm { width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+footer { padding:48px 24px; border-top:1px solid var(--border); text-align:center; }
+.footer-logo { font-family:var(--mono); font-size:14px; font-weight:700; color:var(--amber); margin-bottom:12px; }
+footer p { font-size:13px; color:var(--muted); }
+footer a { color:var(--cyan); text-decoration:none; }
+footer a:hover { text-decoration:underline; }
+.footer-links { display:flex; gap:24px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+.footer-links a { font-size:13px; color:var(--muted); text-decoration:none; transition:color .2s; }
+.footer-links a:hover { color:var(--text); }
+
+/* ── ANIMATIONS ───────────────────────────────────────────────────────────── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+.reveal { opacity:0; transform:translateY(30px); transition:opacity .7s ease,transform .7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── TOAST ────────────────────────────────────────────────────────────────── */
+.toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--green); color:#000; padding:12px 24px; border-radius:8px; font-family:var(--mono); font-size:14px; font-weight:700; transition:transform .3s ease; z-index:999; pointer-events:none; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:600px){.nav-links{display:none;} h1{font-size:42px;}}
+</style>
+</head>
+<body>
+
+<div class="beams">
+  <div class="beam"></div><div class="beam"></div><div class="beam"></div>
+  <div class="beam"></div><div class="beam"></div>
+</div>
+
+<!-- ══ NAV ═══════════════════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#hero" class="nav-logo">QLC+<span>/</span>AutoPalette</a>
+  <ul class="nav-links">
+    <li><a href="#features"><span class="it">Funzionalità</span><span class="en">Features</span></a></li>
+    <li><a href="#new">v1.1</a></li>
+    <li><a href="#usage"><span class="it">Uso</span><span class="en">Usage</span></a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine" target="_blank">GitHub ↗</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-badge">v1.1alpha</span>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
+      <div class="lang-sep"></div>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO ═══════════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="container">
+    <span class="hero-tag">
+      <span class="it">🎭 Per i lighting designer QLC+</span>
+      <span class="en">🎭 For QLC+ lighting designers</span>
+    </span>
+    <h1>
+      <span class="qlc">QLC+</span><br>
+      <span class="auto">Auto Palette</span><br>
+      FX Engine
+    </h1>
+    <p class="hero-sub">
+      <span class="it">Smetti di costruire scene a mano.<br>
+        <em>Un solo comando genera l'intera palette</em> — colori, posizioni,
+        effetti di movimento e sequenze — per ogni fixture del tuo show.</span>
+      <span class="en">Stop building scenes by hand.<br>
+        <em>One command generates your entire palette</em> — colors, positions,
+        movement effects and chase sequences — for every fixture in your show.</span>
+    </p>
+    <div class="hero-cmd" onclick="copyCmd()" title="Click to copy">
+      python3 qlcplus_auto_palette_fxengine.py show.qxw
+      <span class="copy-hint"><span class="it">copia</span><span class="en">copy</span></span>
+    </div>
+    <div class="hero-btns">
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases/latest"
+         class="btn btn-primary" target="_blank">
+        ⬇ <span class="it">Scarica v1.1alpha</span><span class="en">Download v1.1alpha</span>
+      </a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine"
+         class="btn btn-secondary" target="_blank">★ GitHub</a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/QLCplus_Auto_Palette_Manual_v110_bilingual_signed.pdf"
+         class="btn btn-ghost" target="_blank">
+        📄 <span class="it">Manuale PDF</span><span class="en">User Manual PDF</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══════════════════════════════════════════════════════════════════ -->
+<section id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="reveal">
+        <div class="stat-n amber">500+</div>
+        <div class="stat-label">
+          <span class="it">Scene statiche generate</span>
+          <span class="en">Static scenes generated</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="stat-n cyan">300+</div>
+        <div class="stat-label">
+          <span class="it">Effetti EFX di movimento</span>
+          <span class="en">Movement EFX effects</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="stat-n violet">600+</div>
+        <div class="stat-label">
+          <span class="it">Chaser e sequenze</span>
+          <span class="en">Chasers &amp; sequences</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="stat-n green">0</div>
+        <div class="stat-label">
+          <span class="it">Dipendenze esterne</span>
+          <span class="en">External dependencies</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ═══════════════════════════════════════════════════════════════ -->
+<section id="features">
+  <div class="container">
+    <p class="section-label reveal"><span class="it">Funzionalità</span><span class="en">Features</span></p>
+    <h2 class="section-title reveal">
+      <span class="it">Tutto ciò che ti serve,<br><span class="accent">già pronto</span></span>
+      <span class="en">Everything you need,<br><span class="accent">already done</span></span>
+    </h2>
+    <div class="features-grid">
+
+      <div class="feat-card reveal" style="--glow:rgba(255,179,71,.12)">
+        <span class="feat-icon">🎨</span>
+        <h3><span class="it">Palette colori completa</span><span class="en">Full color palette</span></h3>
+        <p><span class="it">35 colori RGB + varianti RGBW/RGBA/RGBAW. 21 colori CMY. Color wheel, gobo, prism. Generati per ogni fixture del progetto.</span>
+           <span class="en">35 RGB colors + RGBW/RGBA/RGBAW variants. 21 CMY colors. Color wheel, gobos, prism. Generated for every fixture in the project.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill">35 RGB</span><span class="feat-pill">21 CMY</span><span class="feat-pill">RGBW / RGBA</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="--glow:rgba(0,229,255,.1)">
+        <span class="feat-icon">🔆</span>
+        <h3>Dimmer &amp; Shutter</h3>
+        <p><span class="it">6 livelli di intensità, shutter aperto/chiuso, strobe slow/med/fast. Scene GLOBAL per agire su tutte le fixture contemporaneamente.</span>
+           <span class="en">6 intensity levels, shutter open/closed, strobe slow/med/fast. GLOBAL scenes to control all fixtures simultaneously.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill cyan">Zero → Full</span><span class="feat-pill cyan">Strobe</span><span class="feat-pill cyan">GLOBAL</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="--glow:rgba(168,85,247,.1)">
+        <span class="feat-icon">🔄</span>
+        <h3><span class="it">EFX Moving Head</span><span class="en">Moving Head EFX</span></h3>
+        <p><span class="it">19 forme (cerchio, figura 8, lissajous…) × 3 taglie × 5 velocità. EFX di gruppo con 6 modalità di fase: Sync, Fan, Mirror, Opposite, Wave, Pairs.</span>
+           <span class="en">19 shapes (circle, figure-8, lissajous…) × 3 sizes × 5 speeds. Group EFX with 6 phase modes: Sync, Fan, Mirror, Opposite, Wave, Pairs.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill violet">19 <span class="it">forme</span><span class="en">shapes</span></span>
+          <span class="feat-pill violet">3 <span class="it">taglie</span><span class="en">sizes</span></span>
+          <span class="feat-pill violet">6 <span class="it">modalità</span><span class="en">modes</span></span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="--glow:rgba(255,179,71,.12)">
+        <span class="feat-icon">⚡</span>
+        <h3><span class="it">Chaser completi</span><span class="en">Complete chasers</span></h3>
+        <p><span class="it">Arcobaleno, stomp, heartbeat, police, knight rider, ambulanza, waterfall, tricolori, bicolori e molto altro. Per singola fixture, gruppo e — novità v1.1 — GLOBAL.</span>
+           <span class="en">Rainbow, stomp, heartbeat, police, knight rider, ambulance, waterfall, tricolors, bicolors and much more. For single fixture, group and — new in v1.1 — GLOBAL.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill"><span class="it">Singola</span><span class="en">Single</span></span>
+          <span class="feat-pill"><span class="it">Gruppo</span><span class="en">Group</span></span>
+          <span class="feat-pill">GLOBAL 🆕</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="--glow:rgba(34,197,94,.1)">
+        <span class="feat-icon">🌐</span>
+        <h3><span class="it">Bilingue IT / EN</span><span class="en">Bilingual IT / EN</span></h3>
+        <p><span class="it">Tutti i nomi di scene, chaser ed EFX disponibili in italiano o inglese. Basta <code style="color:var(--cyan);font-family:var(--mono)">--lang en</code> da riga di comando.</span>
+           <span class="en">All scene, chaser and EFX names available in Italian or English. Simply use <code style="color:var(--cyan);font-family:var(--mono)">--lang en</code> on the command line.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill green">--lang it</span><span class="feat-pill green">--lang en</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="--glow:rgba(0,229,255,.1)">
+        <span class="feat-icon">🔒</span>
+        <h3><span class="it">Non-distruttivo</span><span class="en">Non-destructive</span></h3>
+        <p><span class="it">Il file .qxw originale non viene mai modificato. Lo script produce sempre un nuovo file <code style="color:var(--amber);font-family:var(--mono)">_palette.qxw</code>. Nessuna dipendenza, solo Python stdlib.</span>
+           <span class="en">The original .qxw file is never modified. The script always produces a new <code style="color:var(--amber);font-family:var(--mono)">_palette.qxw</code> file. No external dependencies — pure Python stdlib.</span></p>
+        <div class="feat-nums">
+          <span class="feat-pill cyan">Non-destructive</span><span class="feat-pill cyan">MIT License</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ NEW IN v1.1 ════════════════════════════════════════════════════════════ -->
+<section id="new">
+  <div class="container">
+    <p class="section-label reveal"><span class="it">Novità</span><span class="en">What's new</span></p>
+    <h2 class="section-title reveal">
+      <span class="it"><span class="accent">Nuovo</span> in v1.1alpha</span>
+      <span class="en"><span class="accent">New</span> in v1.1alpha</span>
+      <span class="badge-new">NEW</span>
+    </h2>
+    <div class="new-grid">
+
+      <div class="new-card reveal"><div class="new-dot a">🌈</div><div>
+        <h4><span class="it">Arcobaleno Globale</span><span class="en">Global Rainbow</span></h4>
+        <p><span class="it">Tutte le fixture ciclano sull'arcobaleno insieme, inclusa versione Smooth con crossfade.</span>
+           <span class="en">All fixtures cycle through the rainbow together, including a Smooth version with crossfade.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot c">🎆</div><div>
+        <h4><span class="it">Stomp Colore</span><span class="en">Color Stomp</span></h4>
+        <p><span class="it">Ogni fixture del gruppo lampeggia su un colore diverso in sequenza.</span>
+           <span class="en">Each fixture in the group flashes on a different sequential color.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot v">🌊</div><div>
+        <h4><span class="it">Onda Colore</span><span class="en">Color Wave</span></h4>
+        <p><span class="it">Onda cromatica progressiva: ogni fixture prende il colore successivo del ciclo arcobaleno.</span>
+           <span class="en">Progressive chromatic wave: each fixture takes the next color in the rainbow cycle.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot a">🌅</div><div>
+        <h4><span class="it">Alba &amp; Tramonto</span><span class="en">Sunrise &amp; Sundown</span></h4>
+        <p><span class="it">Rosso → Arancio → Giallo → Bianco Caldo → Bianco con crossfade, e l'inverso.</span>
+           <span class="en">Red → Orange → Yellow → Warm White → White with soft crossfade, and its reverse.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot c">💠</div><div>
+        <h4><span class="it">Split Colori</span><span class="en">Split Colors</span></h4>
+        <p><span class="it">Fixture dispari = colori caldi, pari = freddi, alternati nel tempo.</span>
+           <span class="en">Odd fixtures = warm colors, even fixtures = cool colors, alternating over time.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot v">🌍</div><div>
+        <h4><span class="it">Categoria CHASER/GLOBAL</span><span class="en">CHASER/GLOBAL category</span></h4>
+        <p><span class="it">9 chaser che coinvolgono tutte le fixture del progetto contemporaneamente, anche di modelli diversi.</span>
+           <span class="en">9 chasers involving all project fixtures simultaneously, even across different models.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot a">🔵</div><div>
+        <h4><span class="it">Scene GLOBAL colori</span><span class="en">GLOBAL color scenes</span></h4>
+        <p><span class="it">35 scene <code style="font-family:var(--mono);color:var(--amber)">GLOBAL » Rosso</code> — tutti i canali RGB di tutte le fixture insieme.</span>
+           <span class="en">35 scenes <code style="font-family:var(--mono);color:var(--amber)">GLOBAL » Red</code> — all RGB channels of all fixtures together.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot c">💬</div><div>
+        <h4><span class="it">Commenti bilingue</span><span class="en">Bilingual comments</span></h4>
+        <p><span class="it">Tutti i commenti interni IT/EN per facilitare la lettura e il contributo al codice.</span>
+           <span class="en">All internal comments in dual IT/EN for easier reading and code contributions.</span></p>
+      </div></div>
+
+      <div class="new-card reveal"><div class="new-dot v">⚡</div><div>
+        <h4><span class="it">Strobo &amp; Polizia Globale</span><span class="en">Global Strobe &amp; Police</span></h4>
+        <p><span class="it">Strobo shutter globale e Red/Blue police su tutte le fixture RGB in un solo chaser.</span>
+           <span class="en">Global shutter strobe and Red/Blue police across all RGB fixtures in a single chaser.</span></p>
+      </div></div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ USAGE ══════════════════════════════════════════════════════════════════ -->
+<section id="usage">
+  <div class="container">
+    <p class="section-label reveal"><span class="it">Come si usa</span><span class="en">How to use it</span></p>
+    <h2 class="section-title reveal">
+      <span class="it"><span class="accent">Tre righe</span> di terminale,<br>centinaia di funzioni</span>
+      <span class="en"><span class="accent">Three lines</span> of terminal,<br>hundreds of functions</span>
+    </h2>
+    <div class="usage-inner">
+      <div>
+        <div class="code-block reveal">
+          <div class="code-header">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span class="code-title">bash</span>
+          </div>
+          <div class="code-body">
+            <span class="c-comment it"># Italiano (default)</span><span class="c-comment en"># Italian (default)</span><br>
+            <span class="c-cmd">python3</span> qlcplus_auto_palette_fxengine.py <span class="c-str">show.qxw</span><br><br>
+            <span class="c-comment it"># Nomi in inglese</span><span class="c-comment en"># English names</span><br>
+            <span class="c-cmd">python3</span> qlcplus_auto_palette_fxengine.py <span class="c-str">show.qxw</span> <span class="c-flag">--lang en</span><br><br>
+            <span class="c-comment it"># Solo scene, no EFX, no chaser</span><span class="c-comment en"># Scenes only, no EFX or chasers</span><br>
+            <span class="c-cmd">python3</span> qlcplus_auto_palette_fxengine.py <span class="c-str">show.qxw</span><br>
+            &nbsp;&nbsp;<span class="c-flag">--skip-efx --skip-chasers</span><br><br>
+            <span class="c-comment it"># Output custom + fade</span><span class="c-comment en"># Custom output + fade</span><br>
+            <span class="c-cmd">python3</span> qlcplus_auto_palette_fxengine.py <span class="c-str">show.qxw</span><br>
+            &nbsp;&nbsp;<span class="c-flag">--output pronto.qxw --fade-in 200 --fade-out 1500</span><br><br>
+            <span class="c-comment it"># Aggiornamento con sovrascrittura</span><span class="c-comment en"># Update with overwrite</span><br>
+            <span class="c-cmd">python3</span> qlcplus_auto_palette_fxengine.py <span class="c-str">show_palette.qxw</span> <span class="c-flag">--overwrite</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="reveal" style="color:var(--muted);font-size:15px;margin-bottom:24px;">
+          <span class="it">Opzioni disponibili:</span><span class="en">Available options:</span>
+        </p>
+        <div class="opts-list">
+          <div class="opt-row reveal"><span class="opt-key">--lang it|en</span><span class="opt-desc"><span class="it">Lingua nomi generati</span><span class="en">Language of generated names</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--output</span><span class="opt-desc"><span class="it">File .qxw di output</span><span class="en">Output .qxw file</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--fixture-dir</span><span class="opt-desc"><span class="it">Directory .qxf extra</span><span class="en">Extra .qxf directory</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--fade-in/out</span><span class="opt-desc"><span class="it">FadeIn/FadeOut in ms</span><span class="en">FadeIn/FadeOut in ms</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--overwrite</span><span class="opt-desc"><span class="it">Sovrascrive funzioni esistenti</span><span class="en">Overwrite existing functions</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--skip-groups</span><span class="opt-desc"><span class="it">Salta scene/EFX/chaser di gruppo</span><span class="en">Skip group scenes/EFX/chasers</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--skip-efx</span><span class="opt-desc"><span class="it">Salta gli EFX di movimento</span><span class="en">Skip movement EFX</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--skip-chasers</span><span class="opt-desc"><span class="it">Salta i chaser</span><span class="en">Skip chasers</span></span></div>
+          <div class="opt-row reveal"><span class="opt-key">--skip-combos</span><span class="opt-desc"><span class="it">Salta le scene combo</span><span class="en">Skip combo scenes</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOLDER STRUCTURE ═══════════════════════════════════════════════════════ -->
+<section id="structure">
+  <div class="container">
+    <p class="section-label reveal"><span class="it">Struttura cartelle</span><span class="en">Folder structure</span></p>
+    <h2 class="section-title reveal">
+      <span class="it"><span class="accent">Tutto organizzato</span><br>per te</span>
+      <span class="en"><span class="accent">Everything organised</span><br>for you</span>
+    </h2>
+    <div class="tree-box reveal">
+<span class="t-dir">Auto Palette/</span>
+├── <span class="t-dir">GLOBAL/</span>                 <span class="t-muted it">← scene globali</span><span class="t-muted en">← global scenes</span>
+├── <span class="t-dir">&lt;<span class="it">Nome Fixture</span><span class="en">Fixture Name</span>&gt;/</span>    <span class="t-muted it">← scene per fixture</span><span class="t-muted en">← per-fixture scenes</span>
+├── <span class="t-dir">GRUPPI/</span>
+│   └── <span class="t-dir">&lt;<span class="it">Modello (Modo)</span><span class="en">Model (Mode)</span>&gt;/</span>  <span class="t-muted it">← scene di gruppo</span><span class="t-muted en">← group scenes</span>
+├── <span class="t-dir">EFX/</span>
+│   ├── <span class="t-dir">&lt;<span class="it">Nome Fixture</span><span class="en">Fixture Name</span>&gt;/</span>   <span class="t-muted it">← EFX per fixture</span><span class="t-muted en">← per-fixture EFX</span>
+│   └── <span class="t-dir">GRUPPI/</span>
+│       └── <span class="t-dir">&lt;<span class="it">Modello</span><span class="en">Model</span>&gt;/</span>          <span class="t-muted it">← EFX di gruppo</span><span class="t-muted en">← group EFX</span>
+└── <span class="t-dir">CHASER/</span>
+    ├── <span class="t-new">GLOBAL/</span>               <span class="t-new it">← chaser globali — NUOVO v1.1 ✦</span><span class="t-new en">← global chasers — NEW v1.1 ✦</span>
+    ├── <span class="t-dir">&lt;<span class="it">Nome Fixture</span><span class="en">Fixture Name</span>&gt;/</span>   <span class="t-muted it">← chaser per fixture</span><span class="t-muted en">← per-fixture chasers</span>
+    └── <span class="t-dir">GRUPPI/</span>
+        └── <span class="t-dir">&lt;<span class="it">Modello</span><span class="en">Model</span>&gt;/</span>        <span class="t-muted it">← chaser di gruppo</span><span class="t-muted en">← group chasers</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DOWNLOAD ═══════════════════════════════════════════════════════════════ -->
+<section id="download">
+  <div class="container">
+    <p class="section-label reveal" style="text-align:center">Download</p>
+    <h2 class="section-title reveal" style="text-align:center">
+      <span class="it"><span class="accent">Scarica</span> e inizia subito</span>
+      <span class="en"><span class="accent">Download</span> and start right away</span>
+    </h2>
+    <div class="dl-grid">
+
+      <a class="dl-card reveal"
+         href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases/latest/download/qlcplus_auto_palette_fxengine.py"
+         target="_blank">
+        <span class="dl-icon">🐍</span>
+        <h3><span class="it">Script Python</span><span class="en">Python Script</span></h3>
+        <p><span class="it">L'engine principale. Python 3.8+, nessuna dipendenza esterna.</span>
+           <span class="en">The main engine. Python 3.8+, no external dependencies.</span></p>
+        <span class="dl-tag">qlcplus_auto_palette_fxengine.py</span>
+      </a>
+
+      <a class="dl-card reveal"
+         href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/QLCplus_Auto_Palette_Manual_v110_bilingual_signed.pdf"
+         target="_blank">
+        <span class="dl-icon">📄</span>
+        <h3><span class="it">Manuale PDF</span><span class="en">User Manual PDF</span></h3>
+        <p><span class="it">Manuale completo bilingue IT+EN firmato digitalmente. 12 sezioni + 2 appendici.</span>
+           <span class="en">Complete bilingual IT+EN manual, digitally signed. 12 sections + 2 appendices.</span></p>
+        <span class="dl-tag">QLCplus_Auto_Palette_Manual_v110_bilingual_signed.pdf</span>
+      </a>
+
+      <a class="dl-card reveal"
+         href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/RELEASE_NOTES_bilingual.md"
+         target="_blank">
+        <span class="dl-icon">📋</span>
+        <h3>Release Notes</h3>
+        <p><span class="it">Note di rilascio bilingue IT+EN con il dettaglio di tutte le novità per versione.</span>
+           <span class="en">Bilingual IT+EN release notes detailing all changes for each version.</span></p>
+        <span class="dl-tag">RELEASE_NOTES_bilingual.md</span>
+      </a>
+
+      <a class="dl-card reveal"
+         href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine"
+         target="_blank">
+        <span class="dl-icon">⚙️</span>
+        <h3><span class="it">Sorgente completo</span><span class="en">Full source</span></h3>
+        <p><span class="it">Repository GitHub con l'intero progetto, cronologia commit e tutte le release.</span>
+           <span class="en">GitHub repository with the full project, commit history and all releases.</span></p>
+        <span class="dl-tag">github.com/marcocoldagelli</span>
+      </a>
+
+    </div>
+
+    <div class="dl-main reveal">
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases/latest"
+         class="btn btn-primary" target="_blank" style="font-size:18px;padding:18px 40px">
+        ⬇ &nbsp;<span class="it">Scarica ultima release — v1.1.0-alpha</span>
+                <span class="en">Download latest release — v1.1.0-alpha</span>
+      </a>
+      <div class="version-info">
+        <span><span class="dot-sm"></span> v1.1.0-alpha · 25 Feb 2026</span>
+        <span>🐍 Python 3.8+</span>
+        <span>🪪 MIT License</span>
+        <span>🌐 IT + EN</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">QLC+ Auto Palette FX Engine</div>
+    <p>
+      <span class="it">Di</span><span class="en">By</span>
+      <a href="https://github.com/marcocoldagelli" target="_blank">Marco Coldagelli</a>
+      — MIT License — v1.1alpha
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine" target="_blank">GitHub</a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases" target="_blank">Releases</a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/QLCplus_Auto_Palette_Manual_v110_bilingual_signed.pdf" target="_blank"><span class="it">Manuale</span><span class="en">Manual</span> PDF</a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/RELEASE_NOTES_bilingual.md" target="_blank">Release Notes</a>
+      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/LICENSE" target="_blank">MIT License</a>
+      <a href="https://www.qlcplus.org" target="_blank">QLC+ ↗</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">
+  <span class="it">✓ Copiato!</span><span class="en">✓ Copied!</span>
+</div>
+
+<script>
+// ── Language switcher ─────────────────────────────────────────────────────────
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.getElementById('btn-it').classList.toggle('active', lang === 'it');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('qlc-lang', lang); } catch(e) {}
+}
+
+// Restore saved preference
+try {
+  const saved = localStorage.getItem('qlc-lang');
+  if (saved === 'en') setLang('en');
+} catch(e) {}
+
+// ── Copy command ──────────────────────────────────────────────────────────────
+function copyCmd() {
+  navigator.clipboard.writeText('python3 qlcplus_auto_palette_fxengine.py show.qxw').catch(()=>{});
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const siblings = Array.from(e.target.parentElement?.children || []);
+    e.target.style.transitionDelay = Math.min(siblings.indexOf(e.target) * 80, 400) + 'ms';
+    e.target.classList.add('visible');
+    obs.unobserve(e.target);
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── Beam randomisation ────────────────────────────────────────────────────────
+document.querySelectorAll('.beam').forEach(b => {
+  b.style.setProperty('--r1', (Math.random()*30-15).toFixed(1)+'deg');
+  b.style.setProperty('--r2', (Math.random()*30-15).toFixed(1)+'deg');
+});
+</script>
+</body>
+</html>
