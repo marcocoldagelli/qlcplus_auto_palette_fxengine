@@ -238,7 +238,7 @@ MOVING_POSITIONS = [
 
 ## Autore / Author
 
-**Marco Coldagelli** — v1.1alpha
+**Marco Coldagelli** — v1.2beta
 
 ---
 
