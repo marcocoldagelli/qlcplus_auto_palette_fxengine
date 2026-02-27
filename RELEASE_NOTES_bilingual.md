@@ -2,111 +2,108 @@
 
 ---
 
-## v1.1.0-alpha
+## v1.2.0-beta
 
-> ⚠️ **IT:** Versione alpha — funzionante e testata, ma l'API interna (nomi costanti, struttura funzioni) potrebbe cambiare in versioni future.
-> ⚠️ **EN:** Alpha release — working and tested, but the internal API (constant names, function structure) may change in future versions.
-
----
-
-### 🇮🇹 Novità / 🇬🇧 What's new
-
-#### Sistema multilingua / Multilingual system
-
-**IT:** Aggiunto supporto completo per lingua dei nomi delle scene generati. Usare `--lang it` (default) o `--lang en` da riga di comando.
-
-**EN:** Full language support added for generated scene names. Use `--lang it` (default) or `--lang en` on the command line.
-
-```bash
-# Italiano (default)
-python3 qlcplus_auto_palette_fxengine.py show.qxw
-
-# English
-python3 qlcplus_auto_palette_fxengine.py show.qxw --lang en
-```
-
-IT: Cosa viene tradotto con `--lang en`:
-EN: What gets translated with `--lang en`:
-- Colori RGB e CMY / RGB and CMY color names
-- Scene dimmer, shutter, zoom, iris, combo
-- Nomi EFX: taglie, velocità, modificatori / EFX names: sizes, speeds, modifiers
-- Tutti i nomi di Chaser / All chaser names
-- Bicolori e tricolori / Bicolor and tricolor sequences
-
-#### Nuovi chaser di gruppo RGB / New RGB group chasers
-
-IT: Aggiunti 5 nuovi tipi di chaser nella sezione di gruppo, tutti disponibili in IT e EN:
-
-EN: Added 5 new chaser types in the group section, all available in IT and EN:
-
-| IT | EN | Descrizione / Description |
-|----|----|--------------------------|
-| **Stomp Colore** | **Color Stomp** | IT: Ogni fixture lampeggia su un colore diverso in sequenza. EN: Each fixture flashes on a different sequential color. |
-| **Onda Colore** | **Color Wave** | IT: Onda cromatica — ogni fixture prende il colore successivo del ciclo. EN: Chromatic wave — each fixture takes the next color in the cycle. |
-| **Alba** | **Sunrise** | IT: Progressione Rosso → Arancio → Giallo → Bianco Caldo → Bianco con crossfade. EN: Ramp Red → Orange → Yellow → Warm White → White with crossfade. |
-| **Tramonto** | **Sundown** | IT: Inverso dell'Alba — da Bianco verso il rosso scuro. EN: Reverse of Sunrise — from White towards deep red. |
-| **Split Colori** | **Split Colors** | IT: Fixture dispari = colori caldi, pari = colori freddi, alternati nel tempo. EN: Odd fixtures = warm colors, even fixtures = cool colors, alternating over time. |
-
-#### Nuovi chaser globali / New global chasers
-
-IT: Aggiunta una nuova categoria `CHASER/GLOBAL` con chaser che coinvolgono **tutte le fixture** del progetto simultaneamente, usando le scene `GLOBAL »` pregenerate.
-
-EN: Added a new `CHASER/GLOBAL` category with chasers involving **all project fixtures** simultaneously, using the pre-generated `GLOBAL »` scenes.
-
-| IT | EN | Descrizione / Description |
-|----|----|----|
-| **Arcobaleno Globale** | **Global Rainbow** | IT: Tutte le fixture ciclano sull'arcobaleno (+ Smooth). EN: All fixtures cycle through the rainbow (+ Smooth). |
-| **Stomp Globale** | **Global Stomp** | IT: Tutte le fixture insieme full/zero. EN: All fixtures together full/zero. |
-| **Battito Globale** | **Global Heartbeat** | IT: Pulsazione dimmer su tutte le fixture. EN: Dimmer pulse on all fixtures. |
-| **Impulso Globale** | **Global Pulse** | IT: Singolo flash ciclico globale. EN: Single cyclic global flash. |
-| **Polizia Globale** | **Global Police** | IT: Rosso/Blu strobo su tutte le fixture RGB. EN: Red/Blue strobe on all RGB fixtures. |
-| **Alba Globale** | **Global Sunrise** | IT: Progressione cromatica dall'alba su tutte le fixture. EN: Chromatic sunrise progression on all fixtures. |
-| **Strobo Globale** | **Global Strobe** | IT: Shutter open/closed su tutte le fixture con Shutter. EN: Shutter open/closed on all fixtures with a Shutter channel. |
-| **Colori Caldi/Freddi Globale** | **Global Warm/Cool Colors** | IT: Palette caldi/freddi su tutte le fixture RGB. EN: Warm/cool palettes on all RGB fixtures. |
-| **Club/Discoteca Globale** | **Global Club/Disco** | IT: Club e discoteca su tutte le fixture. EN: Club and disco on all fixtures. |
-
-#### Scene GLOBAL colori / GLOBAL color scenes
-
-IT: Aggiunte scene `GLOBAL » <Colore>` (es. `GLOBAL » Rosso`, `GLOBAL » White`) che impostano contemporaneamente tutti i canali RGB di tutte le fixture allo stesso colore. Queste scene sono anche la base dei nuovi chaser globali.
-
-EN: Added `GLOBAL » <Color>` scenes (e.g. `GLOBAL » Red`, `GLOBAL » White`) that simultaneously set all RGB channels of all fixtures to the same color. These scenes are also the foundation of the new global chasers.
-
-#### Commenti interni bilingue / Bilingual internal comments
-
-IT: Tutti i commenti principali nello script sono ora disponibili sia in italiano che in inglese.
-
-EN: All main comments in the script are now available in both Italian and English.
+&gt; ⚠️ **IT:** Versione di manutenzione — risolve bug critici di ricerca fixture e parsing canali.
+&gt; ⚠️ **EN:** Maintenance release — fixes critical fixture search and channel parsing bugs.
 
 ---
 
-### IT: Opzioni da riga di comando / EN: Command-line options
+### 🇮🇹 Correzioni principali / 🇬🇧 Main fixes
 
-| Opzione / Option | Valore / Value | Default | IT | EN |
-|---|---|---|---|---|
-| `--output` | `FILE.qxw` | `input_palette.qxw` | File di output | Output file |
-| `--fixture-dir` | `PATH` | — | Dir aggiuntiva `.qxf` | Additional `.qxf` dir |
-| `--fade-in` | `MS` | `0` | FadeIn scene (ms) | Scene fade in (ms) |
-| `--fade-out` | `MS` | `2000` | FadeOut scene (ms) | Scene fade out (ms) |
-| `--lang` | `it`\|`en` | `it` | **NUOVO** — lingua nomi | **NEW** — name language |
-| `--overwrite` | flag | off | Sovrascrive esistenti | Overwrite existing |
-| `--skip-groups` | flag | off | Salta gruppi | Skip groups |
-| `--skip-combos` | flag | off | Salta combo | Skip combos |
-| `--skip-efx` | flag | off | Salta EFX | Skip EFX |
-| `--skip-chasers` | flag | off | Salta chaser | Skip chasers |
-| `--min-cap-scenes` | `N` | `2` | Min capability | Min capabilities |
+#### Ricerca fixture QXF migliorata / Improved QXF fixture search
+
+**IT:** Risolto problema di ricerca file `.qxf` in librerie con struttura non standard. Ora lo script:
+- Cerca ricorsivamente in tutte le sottocartelle
+- Usa score-based matching per trovare il file più appropriato
+- Accetta file anche con manufacturer diverso o vuoto se il match è forte (score ≥ 45)
+- Priorizza file con nome manufacturer-modello esatto
+
+**EN:** Fixed `.qxf` file search issues in non-standard library structures. The script now:
+- Searches recursively in all subdirectories
+- Uses score-based matching to find the most appropriate file
+- Accepts files with different or empty manufacturer if match is strong (score ≥ 45)
+- Prioritizes files with exact manufacturer-model name
+
+#### Supporto preset canali QLC+ / QLC+ channel preset support
+
+**IT:** Aggiunto riconoscimento automatico dei canali colore e funzione tramite attributo `Preset` nei file QXF:
+
+| Preset | Gruppo assegnato |
+|--------|------------------|
+| `IntensityRed` / `IntensityGreen` / `IntensityBlue` | Red / Green / Blue |
+| `IntensityWhite` | White |
+| `IntensityAmber` | Amber |
+| `IntensityUV` / `IntensityViolet` | UV |
+| `IntensityCyan` / `IntensityMagenta` / `IntensityYellow` | Cyan / Magenta / Yellow |
+| `BeamZoomSmallBig` / `BeamZoomBigSmall` | Zoom |
+| `FocusNearFar` / `FocusFarNear` | Focus |
+| `PrismRotation` / `PrismOnOff` | Prism |
+| `SpeedPanTiltSlowFast` | Speed |
+
+**EN:** Added automatic recognition of color and function channels via `Preset` attribute in QXF files:
+
+| Preset | Assigned group |
+|--------|----------------|
+| `IntensityRed` / `IntensityGreen` / `IntensityBlue` | Red / Green / Blue |
+| `IntensityWhite` | White |
+| `IntensityAmber` | Amber |
+| `IntensityUV` / `IntensityViolet` | UV |
+| `IntensityCyan` / `IntensityMagenta` / `IntensityYellow` | Cyan / Magenta / Yellow |
+| `BeamZoomSmallBig` / `BeamZoomBigSmall` | Zoom |
+| `FocusNearFar` / `FocusFarNear` | Focus |
+| `PrismRotation` / `PrismOnOff` | Prism |
+| `SpeedPanTiltSlowFast` | Speed |
+
+#### Fallback moving head robusto / Robust moving head fallback
+
+**IT:** Quando non viene trovato il file `.qxf`, il fallback generico ora rileva correttamente i moving head anche da keyword nel nome (es. "Beam", "7R", "230W", "Wash Zoom") e crea automaticamente i canali Pan/Tilt necessari per gli EFX.
+
+**EN:** When `.qxf` file is not found, the generic fallback now correctly detects moving heads from name keywords (e.g. "Beam", "7R", "230W", "Wash Zoom") and automatically creates Pan/Tilt channels needed for EFX.
+
+#### Gestione errori valori None / None value error handling
+
+**IT:** Aggiunta protezione contro valori `None` nelle capability dei canali. Lo script ora salta silenziosamente valori non validi invece di generare errore `TypeError`.
+
+**EN:** Added protection against `None` values in channel capabilities. The script now silently skips invalid values instead of raising `TypeError`.
 
 ---
 
-### IT: Limitazioni note / EN: Known limitations
+### 🇮🇹 Novità v1.1.0-alpha (mantenute) / 🇬🇧 v1.1.0-alpha features (retained)
 
-- IT: I canali Pan/Tilt devono essere correttamente definiti nel file `.qxf` con `Group=Pan`/`Tilt` o con il preset `PositionPan`/`PositionTilt`; fixture con definizioni `.qxf` incomplete potrebbero non generare EFX.
-  EN: Pan/Tilt channels must be correctly defined in the `.qxf` file with `Group=Pan`/`Tilt` or with the `PositionPan`/`PositionTilt` preset; fixtures with incomplete `.qxf` definitions may not generate EFX.
-- IT: Le fixture Generic ricevono capabilities semplificate: scene strobe e color wheel non vengono generate per queste fixture.
-  EN: Generic fixtures receive simplified capabilities: strobe and color wheel scenes are not generated for these fixtures.
-- IT: `--fade-in` / `--fade-out` si applicano uniformemente a tutte le scene.
-  EN: `--fade-in` / `--fade-out` apply uniformly to all scenes.
-- IT: I chaser di gruppo `Onda Colore` / `Split Colori` richiedono che le scene per-fixture dei singoli colori esistano nel `scene_map`; se una fixture non ha canali RGB, quella fixture viene saltata silenziosamente nel chaser.
-  EN: The `Color Wave` / `Split Colors` group chasers require that per-fixture color scenes exist in `scene_map`; if a fixture has no RGB channels, it is silently skipped in the chaser.
+&gt; IT: Tutte le funzionalità della v1.1.0-alpha sono mantenute e funzionanti:
+&gt; EN: All v1.1.0-alpha features are retained and working:
+
+- Sistema multilingua `--lang it|en` / Multilingual system `--lang it|en`
+- Nuovi chaser di gruppo: Stomp Colore, Onda Colore, Alba, Tramonto, Split Colori / Color Stomp, Color Wave, Sunrise, Sundown, Split Colors
+- Nuovi chaser globali: Arcobaleno Globale, Stomp Globale, Battito Globale, ecc. / Global Rainbow, Global Stomp, Global Heartbeat, etc.
+- Scene GLOBAL colori / GLOBAL color scenes
+
+---
+
+### IT: File di esempio testati / EN: Tested fixture files
+
+| Manufacturer | Model | Canali / Channels | Stato / Status |
+|-------------|-------|-------------------|----------------|
+| Shehds | Super Beam 230W 7R (new) | 16CH | ✅ Funzionante / Working |
+| Shehds | Wash Zoom LED 36x18W RGBWA+UV | 12CH | ✅ Funzionante / Working |
+| Generic | RGB / RGBW / Dimmer | vari | ✅ Funzionante / Working |
+
+---
+
+### IT: Debug migliorato / EN: Improved debugging
+
+**IT:** Aggiunti messaggi di debug dettagliati per:
+- Varianti del nome modello generate durante la ricerca
+- Score di matching dei candidati trovati
+- Manufacturer e Model letti dai file QXF
+- Canali rilevati per ogni fixture (inclusi gruppi assegnati)
+
+**EN:** Added detailed debug messages for:
+- Generated model name variants during search
+- Matching score of found candidates
+- Manufacturer and Model read from QXF files
+- Detected channels for each fixture (including assigned groups)
 
 ---
 
@@ -115,8 +112,16 @@ EN: All main comments in the script are now available in both Italian and Englis
 | Componente / Component | IT: Versione testata / EN: Tested version |
 |-----------|---------------|
 | Python | 3.10, 3.11, 3.12 |
-| QLC+ | 4.12.x, 4.13.x |
+| QLC+ | 4.12.x, 4.13.x, 4.14.x |
 | Sistema / OS | Linux (Ubuntu 22.04+), macOS 13+, Windows 10/11 |
+
+---
+
+## v1.1.0-alpha *(precedente / previous)*
+
+IT: Prima release con sistema multilingua, chaser globali, nuovi effetti di gruppo.
+
+EN: First release with multilingual system, global chasers, new group effects.
 
 ---
 
