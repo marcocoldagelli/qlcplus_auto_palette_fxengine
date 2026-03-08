@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
 ![QLC+](https://img.shields.io/badge/QLC%2B-4.x-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.1alpha-yellow)
+![Version](https://img.shields.io/badge/version-1.3beta-yellow)
 
 ---
 
@@ -162,6 +162,12 @@ Group EFX with 6 phase offset modes: **Sync, Fan, Mirror, Opposite, Wave, Pairs*
 - Battito Globale/Global Heartbeat, Impulso Globale/Global Pulse
 - Strobo Globale/Global Strobe, Club Colors/Discoteca Globale
 
+**QLC-GRUPPI — NOVITÀ v1.3 / NEW v1.3:**
+
+IT: Per ogni `FixtureGroup` definito manualmente nel progetto QLC+, vengono generati scene, EFX e chaser dedicati. Solo le capabilities comuni a **tutte** le fixture del gruppo vengono utilizzate (intersezione).
+
+EN: For each `FixtureGroup` manually defined in the QLC+ project, dedicated scenes, EFX and chasers are generated. Only capabilities shared by **all** fixtures in the group are used (intersection).
+
 ---
 
 ## IT: Struttura cartelle / EN: Folder structure
@@ -170,17 +176,23 @@ Group EFX with 6 phase offset modes: **Sync, Fan, Mirror, Opposite, Wave, Pairs*
 Auto Palette/
 ├── GLOBAL/                          ← scene globali / global scenes
 ├── <Nome Fixture / Fixture Name>/   ← scene per fixture
-├── GRUPPI/ o GROUPS/
-│   └── <Modello (Modo)>/            ← scene di gruppo / group scenes
+├── GRUPPI/                          ← scene per-modello / per-model scenes
+│   └── <Modello (Modo)>/
+├── QLC-GRUPPI/                      ← scene gruppi QLC+ ← NUOVO v1.3
+│   └── <Nome Gruppo QLC+>/
 ├── EFX/
 │   ├── <Nome Fixture>/              ← EFX per fixture
-│   └── GRUPPI/GROUPS/
-│       └── <Modello (Modo)>/        ← EFX di gruppo / group EFX
+│   ├── GRUPPI/
+│   │   └── <Modello (Modo)>/        ← EFX di gruppo per-modello
+│   └── QLC-GRUPPI/                  ← EFX gruppi QLC+ ← NUOVO v1.3
+│       └── <Nome Gruppo QLC+>/
 └── CHASER/
-    ├── GLOBAL/                      ← chaser globali / global chasers  ← NUOVO v1.1
+    ├── GLOBAL/                      ← chaser globali / global chasers
     ├── <Nome Fixture>/              ← chaser per fixture
-    └── GRUPPI/GROUPS/
-        └── <Modello (Modo)>/        ← chaser di gruppo / group chasers
+    ├── GRUPPI/
+    │   └── <Modello (Modo)>/        ← chaser per-modello / per-model chasers
+    └── QLC-GRUPPI/                  ← chaser gruppi QLC+ ← NUOVO v1.3
+        └── <Nome Gruppo QLC+>/
 ```
 
 ---
@@ -190,6 +202,12 @@ Auto Palette/
 IT: Fixture raggruppate per `(Modello, Modo, Canali)`: fixture con stesso modello ma configurazione diversa (es. RGB 3ch puro vs Dimmer+RGB 4ch) rimangono in gruppi separati.
 
 EN: Fixtures grouped by `(Model, Mode, Channels)`: fixtures with the same model name but different configurations (e.g. pure RGB 3ch vs Dimmer+RGB 4ch / IRGB) are kept in separate groups.
+
+**NOVITÀ v1.3 / NEW v1.3 — FixtureGroup QLC+:**
+
+IT: Lo script legge anche i `FixtureGroup` definiti manualmente nel progetto e genera una famiglia parallela di funzioni sotto `QLC-GRUPPI/`. I due sistemi (per-modello e QLC+) coesistono senza interferenze.
+
+EN: The script also reads `FixtureGroup` entries manually defined in the project and generates a parallel family of functions under `QLC-GRUPPI/`. Both systems (per-model and QLC+) coexist without conflicts.
 
 ---
 
@@ -238,7 +256,7 @@ MOVING_POSITIONS = [
 
 ## Autore / Author
 
-**Marco Coldagelli** — v1.2beta
+**Marco Coldagelli** — v1.3beta
 
 ---
 
