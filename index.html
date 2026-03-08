@@ -183,13 +183,13 @@ footer a:hover { text-decoration:underline; }
   <a href="#hero" class="nav-logo">QLC+<span>/</span>AutoPalette</a>
   <ul class="nav-links">
     <li><a href="#features" data-i18n="nav.features">Funzionalità</a></li>
-    <li><a href="#new">v1.2</a></li>
+    <li><a href="#new">v1.3</a></li>
     <li><a href="#usage" data-i18n="nav.usage">Uso</a></li>
     <li><a href="#download">Download</a></li>
     <li><a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine" target="_blank">GitHub ↗</a></li>
   </ul>
   <div class="nav-right">
-    <span class="nav-badge">v1.2beta</span>
+    <span class="nav-badge">v1.3beta</span>
     <div class="lang-switch">
       <button class="lang-btn active" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
       <div class="lang-sep"></div>
@@ -219,11 +219,11 @@ footer a:hover { text-decoration:underline; }
     <div class="hero-btns">
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases/latest"
          class="btn btn-primary" target="_blank">
-        ⬇ <span data-i18n="hero.btn.dl">Scarica v1.2beta</span>
+        ⬇ <span data-i18n="hero.btn.dl">Scarica v1.3beta</span>
       </a>
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine"
          class="btn btn-secondary" target="_blank">★ GitHub</a>
-      <a href="QLCplus_Auto_Palette_Manual_v120_bilingual_signed.pdf"
+      <a href="QLC_AutoPalette_Manual_v130beta_bilingual_signed.pdf"
          class="btn btn-ghost" target="_blank">
         📄 <span data-i18n="hero.btn.manual">Manuale PDF</span>
       </a>
@@ -285,7 +285,8 @@ footer a:hover { text-decoration:underline; }
         <div class="feat-nums">
           <span class="pill" data-i18n="f4.single">Singola</span>
           <span class="pill" data-i18n="f4.group">Gruppo</span>
-          <span class="pill">GLOBAL 🆕</span>
+          <span class="pill">GLOBAL</span>
+          <span class="pill c">QLC-GRUPPI 🆕</span>
         </div>
       </div>
 
@@ -307,50 +308,30 @@ footer a:hover { text-decoration:underline; }
   </div>
 </section>
 
-<!-- NEW IN v1.2 -->
+<!-- NEW IN v1.3 -->
 <section id="new">
   <div class="container">
     <p class="section-label reveal" data-i18n="new.label">Novità</p>
     <h2 class="section-title reveal">
-      <span class="accent" data-i18n="new.title">Nuovo</span> in v1.2beta
+      <span class="accent" data-i18n="new.title">Nuovo</span> in v1.3beta
       <span class="badge-new">NEW</span>
     </h2>
     <div class="new-grid">
-      <div class="new-card reveal"><div class="new-dot a">🌈</div><div>
-        <h4 data-i18n="n1.title">Arcobaleno Globale</h4>
-        <p data-i18n="n1.desc">Tutte le fixture ciclano sull'arcobaleno insieme, inclusa versione Smooth con crossfade.</p>
+      <div class="new-card reveal"><div class="new-dot a">🗂️</div><div>
+        <h4 data-i18n="n1.title">Supporto FixtureGroup QLC+</h4>
+        <p data-i18n="n1.desc">Lo script legge i FixtureGroup definiti manualmente nel progetto e genera scene, EFX e chaser dedicati per ogni gruppo sotto <code style="color:var(--amber);font-family:var(--mono)">QLC-GRUPPI/</code>.</p>
       </div></div>
-      <div class="new-card reveal"><div class="new-dot c">🎆</div><div>
-        <h4 data-i18n="n2.title">Stomp Colore</h4>
-        <p data-i18n="n2.desc">Ogni fixture del gruppo lampeggia su un colore diverso in sequenza.</p>
+      <div class="new-card reveal"><div class="new-dot c">⚙️</div><div>
+        <h4 data-i18n="n2.title">Intersezione capabilities</h4>
+        <p data-i18n="n2.desc">Per i gruppi QLC+ eterogenei vengono generati solo gli effetti supportati da <em>tutte</em> le fixture del gruppo — nessun effetto applicato se non disponibile su tutti i membri.</p>
       </div></div>
-      <div class="new-card reveal"><div class="new-dot v">🌊</div><div>
-        <h4 data-i18n="n3.title">Onda Colore</h4>
-        <p data-i18n="n3.desc">Onda cromatica progressiva: ogni fixture prende il colore successivo del ciclo arcobaleno.</p>
+      <div class="new-card reveal"><div class="new-dot v">🌐</div><div>
+        <h4 data-i18n="n3.title">Prefisso GRUPPO / GROUP localizzato</h4>
+        <p data-i18n="n3.desc">Il prefisso dei nomi delle funzioni di gruppo è ora correttamente localizzato: <code style="color:var(--amber);font-family:var(--mono)">GRUPPO</code> in italiano, <code style="color:var(--cyan);font-family:var(--mono)">GROUP</code> in inglese. Fix applicato anche ai gruppi per-modello.</p>
       </div></div>
-      <div class="new-card reveal"><div class="new-dot a">🌅</div><div>
-        <h4 data-i18n="n4.title">Alba &amp; Tramonto</h4>
-        <p data-i18n="n4.desc">Rosso → Arancio → Giallo → Bianco Caldo → Bianco con crossfade, e l'inverso.</p>
-      </div></div>
-      <div class="new-card reveal"><div class="new-dot c">💠</div><div>
-        <h4 data-i18n="n5.title">Split Colori</h4>
-        <p data-i18n="n5.desc">Fixture dispari = colori caldi, pari = colori freddi, alternati nel tempo.</p>
-      </div></div>
-      <div class="new-card reveal"><div class="new-dot v">🌍</div><div>
-        <h4 data-i18n="n6.title">Categoria CHASER/GLOBAL</h4>
-        <p data-i18n="n6.desc">9 chaser che coinvolgono tutte le fixture del progetto contemporaneamente, anche di modelli diversi.</p>
-      </div></div>
-      <div class="new-card reveal"><div class="new-dot a">🔵</div><div>
-        <h4 data-i18n="n7.title">Scene GLOBAL colori</h4>
-        <p data-i18n="n7.desc">35 scene GLOBAL » Rosso, GLOBAL » White — tutti i canali RGB di tutte le fixture insieme.</p>
-      </div></div>
-      <div class="new-card reveal"><div class="new-dot c">💬</div><div>
-        <h4 data-i18n="n8.title">Commenti bilingue</h4>
-        <p data-i18n="n8.desc">Tutti i commenti interni IT/EN per facilitare la lettura e il contributo al codice.</p>
-      </div></div>
-      <div class="new-card reveal"><div class="new-dot v">⚡</div><div>
-        <h4 data-i18n="n9.title">Strobo &amp; Polizia Globale</h4>
-        <p data-i18n="n9.desc">Strobo shutter globale e Red/Blue police su tutte le fixture RGB in un solo chaser.</p>
+      <div class="new-card reveal"><div class="new-dot a">💬</div><div>
+        <h4 data-i18n="n4.title">Output terminale localizzato</h4>
+        <p data-i18n="n4.desc">Tutti i messaggi del terminale (passate, riepilogo, errori) sono ora tradotti in inglese con <code style="color:var(--cyan);font-family:var(--mono)">--lang en</code>, tramite il nuovo dizionario <code style="color:var(--amber);font-family:var(--mono)">UI_STRINGS</code>.</p>
       </div></div>
     </div>
   </div>
@@ -428,11 +409,11 @@ footer a:hover { text-decoration:underline; }
         <p data-i18n="dl1.desc">L'engine principale. Python 3.8+, nessuna dipendenza esterna.</p>
         <span class="dl-tag">qlcplus_auto_palette_fxengine.py</span>
       </a>
-      <a class="dl-card reveal" href="QLCplus_Auto_Palette_Manual_v120_bilingual_signed.pdf" target="_blank">
+      <a class="dl-card reveal" href="QLC_AutoPalette_Manual_v130beta_bilingual_signed.pdf" target="_blank">
         <span class="dl-icon">📄</span>
         <h3 data-i18n="dl2.title">Manuale PDF</h3>
-        <p data-i18n="dl2.desc">Manuale completo bilingue IT+EN firmato digitalmente. 12 sezioni + 2 appendici.</p>
-        <span class="dl-tag">QLCplus_Auto_Palette_Manual_v120_bilingual_signed.pdf</span>
+        <p data-i18n="dl2.desc">Manuale completo bilingue IT+EN. 13 sezioni + 2 appendici. Aggiornato v1.3beta.</p>
+        <span class="dl-tag">QLC_AutoPalette_Manual_v130beta_bilingual_signed.pdf</span>
       </a>
       <a class="dl-card reveal" href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/RELEASE_NOTES_bilingual.md" target="_blank">
         <span class="dl-icon">📋</span>
@@ -450,10 +431,10 @@ footer a:hover { text-decoration:underline; }
     <div class="dl-main reveal">
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases/latest"
          class="btn btn-primary" target="_blank" style="font-size:18px;padding:18px 40px">
-        ⬇ &nbsp;<span data-i18n="dl.btn">Scarica ultima release — v1.2.0-beta</span>
+        ⬇ &nbsp;<span data-i18n="dl.btn">Scarica ultima release — v1.3.0-beta</span>
       </a>
       <div class="version-info">
-        <span><span class="dot-sm"></span> v1.2.0-beta · 27 Feb 2026</span>
+        <span><span class="dot-sm"></span> v1.3.0-beta · 8 Mar 2026</span>
         <span>🐍 Python 3.8+</span>
         <span>🪪 MIT License</span>
         <span>🌐 IT + EN</span>
@@ -466,11 +447,11 @@ footer a:hover { text-decoration:underline; }
 <footer>
   <div class="container">
     <div class="footer-logo">QLC+ Auto Palette FX Engine</div>
-    <p><span data-i18n="footer.by">Di</span> <a href="https://github.com/marcocoldagelli" target="_blank">Marco Coldagelli</a> — MIT License — v1.2beta</p>
+    <p><span data-i18n="footer.by">Di</span> <a href="https://github.com/marcocoldagelli" target="_blank">Marco Coldagelli</a> — MIT License — v1.3beta</p>
     <div class="footer-links">
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine" target="_blank">GitHub</a>
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/releases" target="_blank">Releases</a>
-      <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/QLCplus_Auto_Palette_Manual_v120_bilingual_signed.pdf" target="_blank"><span data-i18n="footer.manual">Manuale</span> PDF</a>
+      <a href="QLC_AutoPalette_Manual_v130beta_bilingual_signed.pdf" target="_blank"><span data-i18n="footer.manual">Manuale</span> PDF</a>
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/RELEASE_NOTES_bilingual.md" target="_blank">Release Notes</a>
       <a href="https://github.com/marcocoldagelli/qlcplus_auto_palette_fxengine/blob/main/LICENSE" target="_blank">MIT License</a>
       <a href="https://www.qlcplus.org" target="_blank">QLC+ ↗</a>
@@ -491,7 +472,7 @@ const T = {
     "hero.tag":      "🎭 Per i lighting designer QLC+",
     "hero.sub":      "Smetti di costruire scene a mano.<br><em>Un solo comando genera l'intera palette</em> — colori, posizioni, effetti di movimento e sequenze — per ogni fixture del tuo show.",
     "hero.copy":     "copia",
-    "hero.btn.dl":   "Scarica v1.2beta",
+    "hero.btn.dl":   "Scarica v1.3beta",
     "hero.btn.manual":"Manuale PDF",
     "stats.scenes":  "Scene statiche generate",
     "stats.efx":     "Effetti EFX di movimento",
@@ -509,7 +490,7 @@ const T = {
     "f3.sizes":      "taglie",
     "f3.modes":      "modalità",
     "f4.title":      "Chaser completi",
-    "f4.desc":       "Arcobaleno, stomp, heartbeat, police, knight rider, ambulanza, waterfall, tricolori, bicolori e molto altro. Per singola fixture, gruppo e — novità v1.2 — GLOBAL.",
+    "f4.desc":       "Arcobaleno, stomp, heartbeat, police, knight rider, ambulanza, waterfall, tricolori, bicolori e molto altro. Per singola fixture, gruppo per-modello, GLOBAL e — novità v1.3 — QLC-GRUPPI.",
     "f4.single":     "Singola",
     "f4.group":      "Gruppo",
     "f5.title":      "Bilingue IT / EN",
@@ -518,24 +499,14 @@ const T = {
     "f6.desc":       "Il file .qxw originale non viene mai modificato. Lo script produce sempre un nuovo file <code style=\"color:var(--amber);font-family:var(--mono)\">_palette.qxw</code>. Nessuna dipendenza, solo Python stdlib.",
     "new.label":     "Novità",
     "new.title":     "Nuovo",
-    "n1.title":      "Arcobaleno Globale",
-    "n1.desc":       "Tutte le fixture ciclano sull'arcobaleno insieme, inclusa versione Smooth con crossfade.",
-    "n2.title":      "Stomp Colore",
-    "n2.desc":       "Ogni fixture del gruppo lampeggia su un colore diverso in sequenza.",
-    "n3.title":      "Onda Colore",
-    "n3.desc":       "Onda cromatica progressiva: ogni fixture prende il colore successivo del ciclo arcobaleno.",
-    "n4.title":      "Alba &amp; Tramonto",
-    "n4.desc":       "Rosso → Arancio → Giallo → Bianco Caldo → Bianco con crossfade, e l'inverso.",
-    "n5.title":      "Split Colori",
-    "n5.desc":       "Fixture dispari = colori caldi, pari = colori freddi, alternati nel tempo.",
-    "n6.title":      "Categoria CHASER/GLOBAL",
-    "n6.desc":       "9 chaser che coinvolgono tutte le fixture del progetto contemporaneamente, anche di modelli diversi.",
-    "n7.title":      "Scene GLOBAL colori",
-    "n7.desc":       "35 scene GLOBAL » Rosso, GLOBAL » White — tutti i canali RGB di tutte le fixture insieme.",
-    "n8.title":      "Commenti bilingue",
-    "n8.desc":       "Tutti i commenti interni IT/EN per facilitare la lettura e il contributo al codice.",
-    "n9.title":      "Strobo &amp; Polizia Globale",
-    "n9.desc":       "Strobo shutter globale e Red/Blue police su tutte le fixture RGB in un solo chaser.",
+    "n1.title":      "Supporto FixtureGroup QLC+",
+    "n1.desc":       "Lo script legge i FixtureGroup definiti manualmente nel progetto e genera scene, EFX e chaser dedicati sotto QLC-GRUPPI/, senza interferire con i gruppi per-modello.",
+    "n2.title":      "Intersezione capabilities",
+    "n2.desc":       "Per i gruppi QLC+ eterogenei vengono generati solo gli effetti supportati da tutte le fixture del gruppo — nessun effetto applicato se non disponibile su tutti i membri.",
+    "n3.title":      "Prefisso GRUPPO / GROUP localizzato",
+    "n3.desc":       "Il prefisso dei nomi delle funzioni di gruppo è ora correttamente localizzato: GRUPPO (IT) e GROUP (EN). Fix applicato anche ai gruppi per-modello della versione precedente.",
+    "n4.title":      "Output terminale localizzato",
+    "n4.desc":       "Tutti i messaggi del terminale (passate, riepilogo, errori) sono ora tradotti in inglese con --lang en, tramite il nuovo dizionario UI_STRINGS e la funzione U().",
     "use.label":     "Come si usa",
     "use.title":     "Tre righe",
     "use.title2":    "di terminale,",
@@ -563,11 +534,11 @@ const T = {
     "dl1.title":     "Script Python",
     "dl1.desc":      "L'engine principale. Python 3.8+, nessuna dipendenza esterna.",
     "dl2.title":     "Manuale PDF",
-    "dl2.desc":      "Manuale completo bilingue IT+EN firmato digitalmente. 12 sezioni + 2 appendici.",
+    "dl2.desc":      "Manuale completo bilingue IT+EN. 13 sezioni + 2 appendici. Aggiornato v1.3beta.",
     "dl3.desc":      "Note di rilascio bilingue IT+EN con il dettaglio di tutte le novità per versione.",
     "dl4.title":     "Sorgente completo",
     "dl4.desc":      "Repository GitHub con l'intero progetto, cronologia commit e tutte le release.",
-    "dl.btn":        "Scarica ultima release — v1.2.0-beta",
+    "dl.btn":        "Scarica ultima release — v1.3.0-beta",
     "footer.by":     "Di",
     "footer.manual": "Manuale",
     "toast":         "✓ Copiato!",
@@ -578,7 +549,7 @@ const T = {
     "hero.tag":      "🎭 For QLC+ lighting designers",
     "hero.sub":      "Stop building scenes by hand.<br><em>One command generates your entire palette</em> — colors, positions, movement effects and chase sequences — for every fixture in your show.",
     "hero.copy":     "copy",
-    "hero.btn.dl":   "Download v1.2beta",
+    "hero.btn.dl":   "Download v1.3beta",
     "hero.btn.manual":"User Manual PDF",
     "stats.scenes":  "Static scenes generated",
     "stats.efx":     "Movement EFX effects",
@@ -596,7 +567,7 @@ const T = {
     "f3.sizes":      "sizes",
     "f3.modes":      "modes",
     "f4.title":      "Complete chasers",
-    "f4.desc":       "Rainbow, stomp, heartbeat, police, knight rider, ambulance, waterfall, tricolors, bicolors and much more. For single fixture, group and — new in v1.2 — GLOBAL.",
+    "f4.desc":       "Rainbow, stomp, heartbeat, police, knight rider, ambulance, waterfall, tricolors, bicolors and much more. For single fixture, per-model group, GLOBAL and — new in v1.3 — QLC-GRUPPI.",
     "f4.single":     "Single",
     "f4.group":      "Group",
     "f5.title":      "Bilingual IT / EN",
@@ -605,24 +576,14 @@ const T = {
     "f6.desc":       "The original .qxw file is never modified. The script always produces a new <code style=\"color:var(--amber);font-family:var(--mono)\">_palette.qxw</code> file. No external dependencies — pure Python stdlib.",
     "new.label":     "What's new",
     "new.title":     "New",
-    "n1.title":      "Global Rainbow",
-    "n1.desc":       "All fixtures cycle through the rainbow together, including a Smooth version with crossfade.",
-    "n2.title":      "Color Stomp",
-    "n2.desc":       "Each fixture in the group flashes on a different sequential color.",
-    "n3.title":      "Color Wave",
-    "n3.desc":       "Progressive chromatic wave: each fixture takes the next color in the rainbow cycle.",
-    "n4.title":      "Sunrise &amp; Sundown",
-    "n4.desc":       "Red → Orange → Yellow → Warm White → White with soft crossfade, and its reverse.",
-    "n5.title":      "Split Colors",
-    "n5.desc":       "Odd fixtures = warm colors, even fixtures = cool colors, alternating over time.",
-    "n6.title":      "CHASER/GLOBAL category",
-    "n6.desc":       "9 chasers involving all project fixtures simultaneously, even across different models.",
-    "n7.title":      "GLOBAL color scenes",
-    "n7.desc":       "35 scenes GLOBAL » Red, GLOBAL » White — all RGB channels of all fixtures together.",
-    "n8.title":      "Bilingual comments",
-    "n8.desc":       "All internal comments in dual IT/EN for easier reading and code contributions.",
-    "n9.title":      "Global Strobe &amp; Police",
-    "n9.desc":       "Global shutter strobe and Red/Blue police across all RGB fixtures in a single chaser.",
+    "n1.title":      "QLC+ FixtureGroup support",
+    "n1.desc":       "The script reads FixtureGroups manually defined in the project and generates dedicated scenes, EFX and chasers under QLC-GRUPPI/, coexisting with per-model groups without conflicts.",
+    "n2.title":      "Capability intersection",
+    "n2.desc":       "For heterogeneous QLC+ groups, only effects supported by all fixtures in the group are generated — no effect is applied unless available on every member.",
+    "n3.title":      "Localised GRUPPO / GROUP prefix",
+    "n3.desc":       "The group function name prefix is now correctly localised: GRUPPO (IT) and GROUP (EN). Fix also applied to per-model groups from the previous version.",
+    "n4.title":      "Localised terminal output",
+    "n4.desc":       "All terminal messages (pass headers, summary, errors) are now translated to English with --lang en, via the new UI_STRINGS dictionary and U() function.",
     "use.label":     "How to use it",
     "use.title":     "Three lines",
     "use.title2":    "of terminal,",
@@ -650,11 +611,11 @@ const T = {
     "dl1.title":     "Python Script",
     "dl1.desc":      "The main engine. Python 3.8+, no external dependencies.",
     "dl2.title":     "User Manual PDF",
-    "dl2.desc":      "Complete bilingual IT+EN manual, digitally signed. 12 sections + 2 appendices.",
+    "dl2.desc":      "Complete bilingual IT+EN manual. 13 sections + 2 appendices. Updated for v1.3beta.",
     "dl3.desc":      "Bilingual IT+EN release notes detailing all changes for each version.",
     "dl4.title":     "Full source",
     "dl4.desc":      "GitHub repository with the full project, commit history and all releases.",
-    "dl.btn":        "Download latest release — v1.2.0-beta",
+    "dl.btn":        "Download latest release — v1.3.0-beta",
     "footer.by":     "By",
     "footer.manual": "Manual",
     "toast":         "✓ Copied!",
@@ -667,30 +628,42 @@ const TREE = {
 ├── <span class="td">GLOBAL/</span>                 <span class="tg">← scene globali</span>
 ├── <span class="td">&lt;Nome Fixture&gt;/</span>         <span class="tg">← scene per fixture</span>
 ├── <span class="td">GRUPPI/</span>
-│   └── <span class="td">&lt;Modello (Modo)&gt;/</span>     <span class="tg">← scene di gruppo</span>
+│   └── <span class="td">&lt;Modello (Modo)&gt;/</span>     <span class="tg">← scene per-modello</span>
+├── <span class="tn">QLC-GRUPPI/</span>             <span class="tn">← scene gruppi QLC+ — NUOVO v1.3 ✦</span>
+│   └── <span class="tn">&lt;Nome Gruppo&gt;/</span>
 ├── <span class="td">EFX/</span>
 │   ├── <span class="td">&lt;Nome Fixture&gt;/</span>       <span class="tg">← EFX per fixture</span>
-│   └── <span class="td">GRUPPI/</span>
-│       └── <span class="td">&lt;Modello&gt;/</span>         <span class="tg">← EFX di gruppo</span>
+│   ├── <span class="td">GRUPPI/</span>
+│   │   └── <span class="td">&lt;Modello&gt;/</span>         <span class="tg">← EFX per-modello</span>
+│   └── <span class="tn">QLC-GRUPPI/</span>           <span class="tn">← EFX gruppi QLC+ — NUOVO v1.3 ✦</span>
+│       └── <span class="tn">&lt;Nome Gruppo&gt;/</span>
 └── <span class="td">CHASER/</span>
-    ├── <span class="tn">GLOBAL/</span>               <span class="tn">← chaser globali — NUOVO v1.2 ✦</span>
+    ├── <span class="td">GLOBAL/</span>               <span class="tg">← chaser globali</span>
     ├── <span class="td">&lt;Nome Fixture&gt;/</span>       <span class="tg">← chaser per fixture</span>
-    └── <span class="td">GRUPPI/</span>
-        └── <span class="td">&lt;Modello&gt;/</span>         <span class="tg">← chaser di gruppo</span>`,
+    ├── <span class="td">GRUPPI/</span>
+    │   └── <span class="td">&lt;Modello&gt;/</span>         <span class="tg">← chaser per-modello</span>
+    └── <span class="tn">QLC-GRUPPI/</span>           <span class="tn">← chaser gruppi QLC+ — NUOVO v1.3 ✦</span>
+        └── <span class="tn">&lt;Nome Gruppo&gt;/</span>`,
   en: `<span class="td">Auto Palette/</span>
 ├── <span class="td">GLOBAL/</span>                 <span class="tg">← global scenes</span>
 ├── <span class="td">&lt;Fixture Name&gt;/</span>          <span class="tg">← per-fixture scenes</span>
 ├── <span class="td">GROUPS/</span>
-│   └── <span class="td">&lt;Model (Mode)&gt;/</span>       <span class="tg">← group scenes</span>
+│   └── <span class="td">&lt;Model (Mode)&gt;/</span>       <span class="tg">← per-model scenes</span>
+├── <span class="tn">QLC-GRUPPI/</span>             <span class="tn">← QLC+ group scenes — NEW v1.3 ✦</span>
+│   └── <span class="tn">&lt;Group Name&gt;/</span>
 ├── <span class="td">EFX/</span>
 │   ├── <span class="td">&lt;Fixture Name&gt;/</span>        <span class="tg">← per-fixture EFX</span>
-│   └── <span class="td">GROUPS/</span>
-│       └── <span class="td">&lt;Model&gt;/</span>            <span class="tg">← group EFX</span>
+│   ├── <span class="td">GROUPS/</span>
+│   │   └── <span class="td">&lt;Model&gt;/</span>            <span class="tg">← per-model EFX</span>
+│   └── <span class="tn">QLC-GRUPPI/</span>           <span class="tn">← QLC+ group EFX — NEW v1.3 ✦</span>
+│       └── <span class="tn">&lt;Group Name&gt;/</span>
 └── <span class="td">CHASER/</span>
-    ├── <span class="tn">GLOBAL/</span>               <span class="tn">← global chasers — NEW v1.2 ✦</span>
+    ├── <span class="td">GLOBAL/</span>               <span class="tg">← global chasers</span>
     ├── <span class="td">&lt;Fixture Name&gt;/</span>        <span class="tg">← per-fixture chasers</span>
-    └── <span class="td">GROUPS/</span>
-        └── <span class="td">&lt;Model&gt;/</span>            <span class="tg">← group chasers</span>`
+    ├── <span class="td">GROUPS/</span>
+    │   └── <span class="td">&lt;Model&gt;/</span>            <span class="tg">← per-model chasers</span>
+    └── <span class="tn">QLC-GRUPPI/</span>           <span class="tn">← QLC+ group chasers — NEW v1.3 ✦</span>
+        └── <span class="tn">&lt;Group Name&gt;/</span>`
 };
 
 // ── APPLICA LINGUA / Apply language ─────────────────────────────────────────
