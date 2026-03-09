@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
 ![QLC+](https://img.shields.io/badge/QLC%2B-4.x-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.3beta-yellow)
+![Version](https://img.shields.io/badge/version-1.3.1beta-yellow)
 
 ---
 
@@ -236,6 +236,24 @@ EN: The script also reads `FixtureGroup` entries manually defined in the project
 
 ---
 
+## IT: Risoluzione problemi / EN: Troubleshooting
+
+| IT: Problema / EN: Issue | IT: Causa / EN: Cause | IT: Soluzione / EN: Solution |
+|---|---|---|
+| Nessuna fixture trovata / No fixtures found | File .qxw non valido o privo di fixture patchate / Invalid .qxw or no patched fixtures | Verificare le fixture nel tab Fixture / Check fixtures in the Fixture tab |
+| Definizione non trovata / Definition not found | File .qxf mancante nella libreria / Missing .qxf in library | Usare `--fixture-dir` per specificare il percorso / Use `--fixture-dir` |
+| Nessun EFX generato / No EFX generated | Canali Pan/Tilt non rilevati nel .qxf / Pan/Tilt not detected in .qxf | Verificare `Group=Pan/Tilt` nel file .qxf / Check `Group=Pan/Tilt` in the .qxf |
+| ID duplicati nel file .qxw / Duplicate IDs | File già processato / Already-processed file | Usare `--overwrite` |
+| Chaser vuoti / Empty chasers | Canali RGB assenti per quella fixture / Missing RGB channels | Verificare i canali RGB della fixture / Check fixture RGB channels |
+| Gruppo QLC+ ignorato / QLC+ group ignored | Fixture IDs non patchate nel progetto / Fixture IDs not patched | Verificare che tutte le fixture del gruppo siano patchate / Check all group fixtures are patched |
+| **Errori grossolani nelle scene: colori sbagliati, canali invertiti, capabilities fuori posto / Gross errors in scenes: wrong colors, inverted channels, misplaced capabilities** | **File .qxf non rilevato in libreria — lo script ha usato il fallback Generic inferendo i canali dal nome del modello / .qxf not found in library — script fell back to Generic mode, inferring channels from model name** | **Verificare che il .qxf sia presente nella libreria e che il nome modello nel .qxw corrisponda esattamente al campo `<Model>` nel .qxf. Usare `--fixture-dir` se necessario. Il log segnala `[WARN] definizione non trovata` quando scatta il fallback / Check that the .qxf is in the library and the model name in the .qxw matches exactly the `<Model>` field in the .qxf. Use `--fixture-dir` if needed. The log shows `[WARN] definition not found` when fallback is triggered** |
+
+> **IT:** Se le scene presentano errori grossolani di mappatura, la causa più probabile è il fallback Generic. Controllare sempre il log: `[WARN] definizione non trovata per …` indica esattamente quali fixture sono state processate senza definizione .qxf.
+>
+> **EN:** If scenes show gross mapping errors, the most likely cause is the Generic fallback. Always check the log: `[WARN] definition not found for …` identifies exactly which fixtures were processed without a .qxf definition.
+
+---
+
 ## IT: Personalizzazione / EN: Customization
 
 ```python
@@ -256,7 +274,7 @@ MOVING_POSITIONS = [
 
 ## Autore / Author
 
-**Marco Coldagelli** — v1.3beta
+**Marco Coldagelli** — v1.3.1beta
 
 ---
 
