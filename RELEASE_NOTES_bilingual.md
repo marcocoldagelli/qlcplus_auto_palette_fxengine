@@ -1,5 +1,44 @@
 # QLC+ Auto Palette FX Engine — Release Notes
 
+## v1.3.1beta
+
+### 🐛 Fix / Bug fixes
+
+#### 🏷️ Lettura nome FixtureGroup robusta / Robust FixtureGroup name reading
+
+Il rilevamento del nome dei `FixtureGroup` QLC+ era fragile: lo script cercava esclusivamente il tag `<n>`, che non è presente in tutte le versioni di QLC+. In caso di mancato rilevamento, il nome del gruppo veniva sostituito dal solo ID numerico (es. `Gruppo 0`, `Gruppo 1`).
+
+The `FixtureGroup` name detection was fragile: the script only looked for the `<n>` tag, which is not present in all QLC+ versions. If not found, the group name was replaced by a plain numeric ID (e.g. `Gruppo 0`, `Gruppo 1`).
+
+**Fix:** la lettura ora prova in sequenza più varianti:
+
+1. Tag `<n>` (formato standard QLC+ 4.x)
+2. Tag `<Name>` o `<name>` (varianti di versione)
+3. Attributo XML `name` / `Name`
+4. Fallback a `Gruppo {ID}` solo se nessuna variante restituisce testo
+
+**Fix:** name reading now tries multiple variants in sequence:
+
+1. Tag `<n>` (standard QLC+ 4.x format)
+2. Tag `<Name>` or `<name>` (version variants)
+3. XML attribute `name` / `Name`
+4. Fallback to `Gruppo {ID}` only if no variant returns text
+
+---
+
+#### 🔢 Formato label QLC-GRUPPI / QLC-GRUPPI label format
+
+I gruppi QLC+ vengono ora nominati con formato `{ID} - {Nome}` (es. `0 - Matrice fondale`) invece del solo nome. Questo rende il label leggibile anche in presenza di nomi simili o ambigui, e mantiene sempre visibile il riferimento all'ID QLC+.
+
+QLC+ groups are now labelled as `{ID} - {Name}` (e.g. `0 - Backdrop Matrix`) instead of the bare name. This keeps the label readable even with similar or ambiguous names, and always shows the QLC+ ID as a reference.
+
+> Questo fix riguarda **esclusivamente** i gruppi `QLC-GRUPPI/` introdotti in v1.3beta.  
+> I gruppi per-modello (`GRUPPI/`) non sono stati modificati.  
+> This fix affects **only** the `QLC-GRUPPI/` groups introduced in v1.3beta.  
+> Per-model groups (`GRUPPI/`) are unchanged.
+
+---
+
 ## v1.3beta
 
 ### Novità / What's new
